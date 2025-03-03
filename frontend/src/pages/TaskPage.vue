@@ -23,7 +23,11 @@
                 </tr>
             </tbody>
         </table> -->
-        <Tasks :tasks="uncompletedTasks" @updated="handleUpdatedTask" />
+        <Tasks :tasks="uncompletedTasks" 
+            @updated="handleUpdatedTask" 
+            @completed="handleCompletedTask" 
+            @removed="handleRemovedTask" 
+        />
         <div>
             <div class="text-center my-3" v-show="showToggleCompletedBtn">
                 <button class="btn btn-sm btn-secondary" @click="$event => showCompletedTasks = !showCompletedTasks">
@@ -32,7 +36,12 @@
                 </button>
             </div>
         </div>
-        <Tasks :tasks="completedTasks" :show="completedTasksIsVisible && showCompletedTasks" />
+        <Tasks :tasks="completedTasks" 
+            :show="completedTasksIsVisible && showCompletedTasks"
+            @updated="handleUpdatedTask" 
+            @completed="handleCompletedTask"
+            @removed="handleRemovedTask"
+        />
 
 
     </div>
@@ -40,7 +49,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { allTasks, createTask, updateTask } from '@/http/task-api';
+import { allTasks, createTask, updateTask, completeTask, removeTask} from '@/http/task-api';
 import Tasks from '@/components/tasks/Tasks.vue';
 import NewTask from '@/components/tasks/NewTask.vue';
 
@@ -93,6 +102,22 @@ const handleUpdatedTask = async (task) => {
     const currentTask = tasks.value.find(item => item.id === task.id)
 
     currentTask.name = updatedTask.data.name
+}
+
+const handleCompletedTask = async (task) => {
+    const { data: updatedTask } = await completeTask(task.id, {
+        is_completed: task.is_completed
+    })
+
+    const currentTask = tasks.value.find(item => item.id === task.id)
+
+    currentTask.is_completed = updatedTask.data.is_completed
+}
+
+const handleRemovedTask = async (task) => {
+    await removeTask(task.id)
+    const index = tasks.value.findIndex(item => item.id === task.id)
+    tasks.value.splice(index, 1)
 }
 </script>
 
