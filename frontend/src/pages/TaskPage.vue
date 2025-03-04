@@ -1,28 +1,6 @@
 <template>
     <div class="container mt-5 d-flex flex-column align-items-center">
         <NewTask @added="handleAddedTask" />
-
-        <!-- Todo List Table -->
-        <!-- <table class="table table-bordered w-75">
-            <thead>
-                <tr>
-                    <th>Task Number</th>
-                    <th>Task</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(task, index) in tasks" :key="task.id">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ task.name }}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm" @click="completeTask(task.id)">Complete</button>
-                        <button class="btn btn-warning btn-sm" @click="editTask(task.id)">Edit</button>
-                        <button class="btn btn-danger btn-sm" @click="deleteTask(task.id)">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table> -->
         <Tasks :tasks="uncompletedTasks" 
             @updated="handleUpdatedTask" 
             @completed="handleCompletedTask" 
@@ -49,9 +27,26 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useTaskStore } from '@/stores/task';
 import { allTasks, createTask, updateTask, completeTask, removeTask} from '@/http/task-api';
 import Tasks from '@/components/tasks/Tasks.vue';
 import NewTask from '@/components/tasks/NewTask.vue';
+import { storeToRefs } from 'pinia';
+
+
+const store = useTaskStore();
+// store.task.name = "First Task";
+// store.task.is_completed = true;
+
+// store.$patch({ 
+//     task: {
+//         name: "First Task Updated using $patch",
+//         is_completed: true 
+//     }
+// });
+
+const { completedTasks, uncompletedTasks } = storeToRefs(store);
+const { fetchAllTasks } = store;
 
 // Reactive variable to store tasks
 const tasks = ref([]);
@@ -71,13 +66,20 @@ const fetchTasks = async () => {
     } catch (error) {
         console.error('Error fetching tasks:', error); // Log any errors
     }
+
+    // console.log('without refs',store.task);
+    // console.log('with refs', task.value);
+
 };
 
 // Fetch tasks when the component is mounted
-onMounted(fetchTasks);
+// onMounted(fetchTasks);
+onMounted(async () => {
+    await fetchAllTasks();
+});
 
-const uncompletedTasks = computed(() => tasks.value.filter(task => !task.is_completed))
-const completedTasks = computed(() => tasks.value.filter(task => task.is_completed))
+// const uncompletedTasks = computed(() => tasks.value.filter(task => !task.is_completed))
+// const completedTasks = computed(() => tasks.value.filter(task => task.is_completed))
 
 const showToggleCompletedBtn = computed(() =>
     uncompletedTasks.value.length > 0 && completedTasks.value.length > 0
