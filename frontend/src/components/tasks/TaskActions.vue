@@ -1,15 +1,6 @@
 <template>
     <!-- Action Buttons -->
     <div>
-    
-        <!-- <button class="btn btn-success btn-sm">
-            Complete
-        </button>
-
-        <span class="btn btn-secondary btn-sm disabled">
-            Completed
-        </span> -->
-
         <!-- Edit button disabled for completed tasks -->
         <button class="btn btn-warning btn-sm" @click="$event => emit('edit')">
             Edit

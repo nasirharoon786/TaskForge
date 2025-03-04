@@ -1,25 +1,19 @@
 <template>
     <li class="list-group-item d-flex justify-content-between align-items-center">
         <!-- Checkbox -->
-        <input type="checkbox" class="form-check-input mt-0 completed" 
-            :checked="task.is_completed"
-            @change="markTastAsCompleted"/>
-            
+        <input type="checkbox" class="form-check-input mt-0 completed" :checked="task.is_completed"
+            @change="markTastAsCompleted" />
 
         <!-- Task Name with conditional class -->
         <div class="ms-2 flex-grow-1" :class="completedClass" @dblclick="$event => isEdit = true">
             <div class="relative" v-if="isEdit">
                 <input class="form-control editable-task" type="text" :value="task.name"
-                    @keyup.esc="$event => isEdit = false" v-focus="vFocus"
-                    @keyup.enter="updateTask"/>
+                    @keyup.esc="$event => isEdit = false" v-focus="vFocus" @keyup.enter="updateTask" />
             </div>
             <span v-else>{{ task.name }}</span>
         </div>
         <!-- Action Buttons -->
-        <TaskActions 
-            @edit="$event => isEdit = true" v-show="!isEdit"
-            @remove="removeTask"
-        />
+        <TaskActions @edit="$event => isEdit = true" v-show="!isEdit" @remove="removeTask" />
     </li>
 
 </template>
